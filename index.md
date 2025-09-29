@@ -37,3 +37,6 @@ I don't have much time for constant activity in opensource, I often make changes
 ## For commercial inquiries and press releases
  - Herman Semenoff <[GermanAizek@yandex.ru](mailto:GermanAizek@yandex.ru)>
  - Herman Semenoff <[GermanAizek@tutamail.com](mailto:GermanAizek@tutamail.com)>
+
+
+<img src="tsukasa.gif" width="100%" />

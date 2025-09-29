@@ -1,7 +1,7 @@
 <div align="center">
   <p>
     <a href="https://github.com/GermanAizek/">
-      <img src="anonymous_persona.webp" />
+      <img src="anonymous_persona.webp" width="50%" />
     </a>
   </p>
 </div>

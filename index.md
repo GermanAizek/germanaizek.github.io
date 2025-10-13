@@ -1,7 +1,7 @@
 <div align="center">
   <p>
     <a href="https://github.com/GermanAizek/">
-      <img src="anonymous_persona.webp" width="50%" />
+      <img src="anonymous_persona.webp" width="50%" style="border-radius: 5%; object-fit: cover; aspect-ratio: 1/1;" />
     </a>
   </p>
 </div>
@@ -28,11 +28,34 @@ I don't have much time for constant activity in opensource, I often make changes
 - and others static, dynamic and fuzzing analyzers
 
 ## My open forks
- - [WinRing0](https://github.com/GermanAizek/WinRing0) (microsoft refused to cooperate with me, they do not issue an EV certificate to fix vulnerability)
+ - [WinRing0](https://github.com/GermanAizek/WinRing0) (Microsoft refused to cooperate with me, they do not issue an EV certificate to fix driver vulnerability)
  - [LXOpenbox](https://github.com/LXunix/lxopenbox) (my Openbox fork)
- - [LXPulseAudio](https://github.com/LXunix/lxpulseaudio) (my pulseaudio fork)
+ - [LXPulseAudio](https://github.com/LXunix/lxpulseaudio) (my Pulseaudio fork)
  - [LibreGoanna](https://github.com/LXunix/libregoanna-uxp) (my PaleMoon/Basilisk browser fork)
  - [and others this](https://github.com/GermanAizek?tab=repositories)
+
+## My favorite books
+
+<div align="center">
+  <div style="display: flex; justify-content: center; gap: 10px;">
+    <img src="51qxFNSdmTL._UF1000,1000_QL80_.jpg" width="30%" />
+    <img src="0013077192-L.jpg" width="30%" />
+  </div>
+</div>
+
+## My favorite teacher
+
+<div align="center">
+  <p>
+    <a href="https://numbless.space/">
+      <img src="AIdro_m_7zh5yayA5fmq1SGxNnXqngaeb792gC6mA5R4FbJ0B1w" width="30%" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;" />
+    </a>
+  </p>
+</div>
+
+<h4 align="center">
+  Edward Numbless
+</h4>
 
 ## For commercial inquiries and press releases
  - Herman Semenoff <[GermanAizek@yandex.ru](mailto:GermanAizek@yandex.ru)>

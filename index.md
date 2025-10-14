@@ -28,7 +28,14 @@ I don't have much time for constant activity in opensource, I often make changes
 - and others static, dynamic and fuzzing analyzers
 
 ## My open forks
- - [WinRing0](https://github.com/GermanAizek/WinRing0) (Microsoft refused to cooperate with me, they do not issue an EV certificate to fix driver vulnerability)
+ - [WinRing0](https://github.com/GermanAizek/WinRing0) 
+
+Microsoft refused to cooperate with me, they do not issue an EV certificate to fix driver vulnerability. Many thanks Gamers Nexus team for highlighting this global issue on Windows.
+
+ <div align="center">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/H_O5JtBqODA?si=kv0y8q-1NXcj8LBj" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
  - [LXOpenbox](https://github.com/LXunix/lxopenbox) (my Openbox fork)
  - [LXPulseAudio](https://github.com/LXunix/lxpulseaudio) (my Pulseaudio fork)
  - [LibreGoanna](https://github.com/LXunix/libregoanna-uxp) (my PaleMoon/Basilisk browser fork)

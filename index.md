@@ -36,6 +36,8 @@ Microsoft refused to cooperate with me, they do not issue an EV certificate to f
     <iframe width="560" height="315" src="https://www.youtube.com/embed/H_O5JtBqODA?si=kv0y8q-1NXcj8LBj" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
+ - [WebDriverxx](https://germanaizek.github.io/webdriverxx/) (Client C++ API for Selenium Server - test automation for browser-based web applications)
+ - [PicoBase64](github.com/GermanAizek/picobase64) (very fast and lightweight header-only C/C++ library for decode and encode strings. [Bechmarks here!](https://rawcdn.githack.com/gaspardpetit/base64/294fac8a0e679cbe72f0a3d6f40e1a3bccba7c5d/result/result.html))
  - [LXOpenbox](https://github.com/LXunix/lxopenbox) (my Openbox fork)
  - [LXPulseAudio](https://github.com/LXunix/lxpulseaudio) (my Pulseaudio fork)
  - [LibreGoanna](https://github.com/LXunix/libregoanna-uxp) (my PaleMoon/Basilisk browser fork)

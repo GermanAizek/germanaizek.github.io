@@ -39,6 +39,11 @@ Microsoft refused to cooperate with me, they do not issue an EV certificate to f
 
  - [WebDriverxx](https://germanaizek.github.io/webdriverxx/) (Client C++ API for Selenium Server - test automation for browser-based web applications)
  - [PicoBase64](github.com/GermanAizek/picobase64) (very fast and lightweight header-only C/C++ library for decode and encode strings. [Bechmarks here!](https://rawcdn.githack.com/gaspardpetit/base64/294fac8a0e679cbe72f0a3d6f40e1a3bccba7c5d/result/result.html))
+ - [AQEMU](https://github.com/AQEMU/aqemu) (Im continue maintain AQEMU)
+ - [midi2mod](https://github.com/GermanAizek/midi2mod) (for demoscene and old keygens fans)
+ - [NUMAyei](https://github.com/GermanAizek/NUMAyei) (attempt make Windows more NUMA-awarless using DLL hijacking winapi calls)
+ - [LibreAward](https://github.com/GermanAizek/libreaward) (attempt make [Award BIOS](https://en.wikipedia.org/wiki/Award_Software) free opensource and modifyable)
+ - [MT7601 driver linux](https://github.com/GermanAizek/mt7601u-hacker) (maintance Mediatek 7601U WiFi driver for Linux)
  - [LXOpenbox](https://github.com/LXunix/lxopenbox) (my Openbox fork)
  - [LXPulseAudio](https://github.com/LXunix/lxpulseaudio) (my Pulseaudio fork)
  - [LibreGoanna](https://github.com/LXunix/libregoanna-uxp) (my PaleMoon/Basilisk browser fork)
@@ -68,8 +73,9 @@ Microsoft refused to cooperate with me, they do not issue an EV certificate to f
 </h4>
 
 ## For commercial inquiries and press releases
- - Herman Semenoff <[GermanAizek@yandex.ru](mailto:GermanAizek@yandex.ru)>
- - Herman Semenoff <[GermanAizek@tutamail.com](mailto:GermanAizek@tutamail.com)>
+ - <[GermanAizek@yandex.ru](mailto:GermanAizek@yandex.ru)>
+ - <[germanaizek0@gmail.com](mailto:germanaizek0@gmail.com)>
+ - <[GermanAizek@tutamail.com](mailto:GermanAizek@tutamail.com)>
 
 
 <img src="tsukasa.gif" width="100%" />

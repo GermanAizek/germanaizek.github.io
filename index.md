@@ -55,7 +55,7 @@ Microsoft refused to cooperate with me, they do not issue an EV certificate to f
 
 ## My progress reverse engineering games in decomp.me
 
-- https://www.decomp.me/u/GermanAizek
+- [https://www.decomp.me/u/GermanAizek](https://www.decomp.me/u/GermanAizek)
 
 ## My favorite books
 

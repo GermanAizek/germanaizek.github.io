@@ -49,6 +49,14 @@ Microsoft refused to cooperate with me, they do not issue an EV certificate to f
  - [LibreGoanna](https://github.com/LXunix/libregoanna-uxp) (my PaleMoon/Basilisk browser fork)
  - [and others this](https://github.com/GermanAizek?tab=repositories)
 
+## My reverse engineered Win32 drivers
+ - [RTCore64](https://github.com/GermanAizek/RTCore64) (fully restored MSI RivaTuner opensource driver with fix new vulns and old CVE)
+ - [iqvw64e](https://github.com/GermanAizek/iqvw64e) (attempt restore original source code and behavior with fixes new find vulnerabilities)
+
+## My progress reverse engineering games in decomp.me
+
+- https://www.decomp.me/u/GermanAizek
+
 ## My favorite books
 
 <div align="center">

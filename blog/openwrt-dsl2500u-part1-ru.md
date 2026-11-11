@@ -184,6 +184,8 @@ Kernel panic - not syncing: Fatal exception
 ```
 
 ### Анализ причины сбоя:
+Ядерный обработчик страничных исключений и ошибок шины [`arch/mips/mm/fault.c:do_page_fault`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/mm/fault.c#L86) зафиксировал панику. Стек вызовов MTD наглядно раскрывает путь исполнения: чтение сектора SquashFS [`mtdblock_readsect`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdblock.c#L244) в [`drivers/mtd/mtdblock.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdblock.c) транслируется через драйвер партиций [`part_read`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdpart.c#L45) в [`drivers/mtd/mtdpart.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdpart.c), опираясь на интерфейс ядра [`include/linux/mtd/mtd.h`](https://github.com/torvalds/linux/blob/v2.6.32/include/linux/mtd/mtd.h), прямо в функцию `my_read`.
+
 Функция `my_read` в модуле `bcm963xx_flash.c` была написана под старые чипы Broadcom с параллельной флеш-памятью (Parallel NOR) и выполняла простейший цикл:
 ```c
 static int my_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen, u_char *buf) {
@@ -209,7 +211,7 @@ static int my_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen
 | `0x41` | `SPI_MSG_DATA` | Буфер передачи FIFO (команда + 24-битный адрес) |
 | `0x80` | `SPI_RX_DATA` | Буфер приема FIFO (считанные данные из Flash) |
 
-Мы разработали автономную ассемблерную функцию на MIPS32 (`patch_spi_mtd_v4.S`), которая полностью заменяет сломанный `my_read`:
+Мы разработали автономную ассемблерную функцию на MIPS32 ([`patch_spi_mtd_v4.S`](downloads/patch_spi_mtd_v4.S)), которая полностью заменяет сломанный `my_read`:
 
 ```mips
 # patch_spi_mtd_v4.S - Прямой аппаратный SPI драйвер BCM6338
@@ -318,9 +320,9 @@ read_done:
 - Статистика адаптера роутера показывала `RX packets: 0` (роутер физически не видел ни одного входящего кадра).
 
 ### Расследование драйвера `bcm63xx_enet`:
-Погружение в исходный код подсистемы Broadcom Ethernet (`arch/mips/bcm63xx/boards/board_bcm963xx.c` и `drivers/net/bcm63xx_enet.c`) вскрыло фундаментальную несостыковку.
+Погружение в исходный код подсистемы Broadcom Ethernet ([`arch/mips/bcm63xx/boards/board_bcm963xx.c`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/boards/board_bcm963xx.c#L39-L48) и [`drivers/net/bcm63xx_enet.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/net/bcm63xx_enet.c#L1708-L1717)) вскрыло фундаментальную несостыковку.
 
-В референсном профиле `board_96338gw`, под который компилировалось ядро, было прописано:
+В референсном профиле `board_96338gw` ([`board_bcm963xx.c:39`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/boards/board_bcm963xx.c#L39-L48)), под который компилировалось ядро, было прописано:
 ```c
 static struct board_info __initdata board_96338gw = {
     .name = "96338GW",
@@ -336,8 +338,8 @@ static struct board_info __initdata board_96338gw = {
 ```
 
 Драйвер сетевой карты обрабатывал эти флаги следующим образом:
-1. Если `!pd->use_internal_phy`, ядро конфигурирует мультиплексор выводов (Pinmux) процессора в режим внешнего интерфейса MII (`GPIO_MODE_6338_ENET0`), отключая физические ножки RJ-45 от внутреннего кристалла!
-2. В функции `bcm_enet_probe`:
+1. В регистраторе платформенных устройств Ethernet ([`arch/mips/bcm63xx/dev-enet.c:144`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/dev-enet.c#L144-L151)), если `!pd->use_internal_phy`, ядро не назначает `dpd->phy_id = 1` и не подключает прерывание `IRQ_ENET_PHY`.
+2. В функции `bcm_enet_probe` ([`drivers/net/bcm63xx_enet.c:1708`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/net/bcm63xx_enet.c#L1708-L1717)):
 ```c
 if (priv->mac_id == 0 && priv->has_phy && !priv->use_external_mii) {
     /* using internal PHY, enable clock */
@@ -345,7 +347,7 @@ if (priv->mac_id == 0 && priv->has_phy && !priv->use_external_mii) {
     clk_enable(priv->phy_clk);
 }
 ```
-Поскольку `has_phy == 0`, ядро **вообще не подавало тактовый сигнал на внутренний физический трансивер (EPHY)**! Сетевой чип физически спал, хотя программный интерфейс ОС бодро рапортовал о «forced UP».
+Поскольку `has_phy == 0`, ядро **вообще не подавало тактовый сигнал на внутренний физический трансивер (EPHY)**! Сетевой чип физически спал, хотя программный интерфейс ОС бодро рапортовал о «forced UP». Определения аппаратных структур платы и платформенных данных Ethernet объявлены в заголовочных файлах [`board_bcm963xx.h`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/include/asm/mach-bcm63xx/board_bcm963xx.h#L32) и [`bcm63xx_dev_enet.h`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/include/asm/mach-bcm63xx/bcm63xx_dev_enet.h#L38).
 
 ### Бинарный патч `board_info`:
 Мы нашли структуру платы `96332` в бинарнике ядра по смещению `0x2a6794` и модифицировали поля:
@@ -480,3 +482,77 @@ mini_fo:/tmp/root       896.0K    896.0K         0 100% /
 - Полная выкладка репозитория с патчами ядра, скриптами сборки и бинарными артефактами.
 
 *Следите за обновлениями в репозитории [GermanAizek/germanaizek.github.io](https://github.com/GermanAizek/germanaizek.github.io).*
+
+---
+
+## 9. Файлы для загрузки и самостоятельной установки
+
+Для самостоятельного повторения эксперимента, восстановления заблокированного модема или использования DSL-2500U D3 в качестве компактного микросервера подготовлен полный комплект готовых файлов и скриптов автоматизации.
+
+### Таблица файлов комплекта:
+
+| Файл | Размер | Описание | SHA-256 Контрольная сумма |
+|---|---|---|---|
+| [**`dsl2500u-openwrt-v5-diy-kit.zip`**](downloads/dsl2500u-openwrt-v5-diy-kit.zip) | 1.72 MB | **Полный архив:** прошивка, скрипт-прошивальщик и исходник ассемблерного SPI драйвера | `2a765bc2bffab4ad00f48a3053d1645545fa457fe35f46654a4f7c5c7d94162b` |
+| [**`openwrt_spi_fixed_v5_cfe.bin`**](downloads/openwrt_spi_fixed_v5_cfe.bin) | 1.75 MB | Готовый бинарный образ OpenWrt Backfire с CFE-заголовком (SPI fix + PHY fix + RAM diet) | `a9198ec719ec701a5fac4eec6169d85d16fec9f2ebed36cf1e6f8a864c068d28` |
+| [**`cfe_auto_flash_and_boot.py`**](downloads/cfe_auto_flash_and_boot.py) | 7.18 KB | Автоматизированный Python-скрипт перехвата CFE, Web-загрузки и верификации | `be739dc6ef2c2b73f9ac5298a61e7a4542e372832b8c52eb7f6f1855465ad369` |
+| [**`patch_spi_mtd_v4.S`**](downloads/patch_spi_mtd_v4.S) | 4.03 KB | Ассемблерный исходный код прямого аппаратного SPI MMIO драйвера (MIPS32) | `d1a3629fb3dc9e4d049ac80b61c786e35bf8a90e737b56d726eb62b92e4b4a4d` |
+
+### Быстрая загрузка из терминала:
+```bash
+# Скачать полный комплект:
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/dsl2500u-openwrt-v5-diy-kit.zip
+unzip dsl2500u-openwrt-v5-diy-kit.zip
+
+# Либо загрузить образ и скрипт по отдельности:
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/openwrt_spi_fixed_v5_cfe.bin
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/cfe_auto_flash_and_boot.py
+```
+
+### Пошаговая инструкция по установке:
+
+#### Шаг 1. Подключение оборудования
+1. Подключите **USB-UART переходник (3.3V TTL)** к разъему `JP2` на плате DSL-2500U:
+   - **GND** → Pin 4 (GND)
+   - **RX** переходника → Pin 3 (TX роутера)
+   - **TX** переходника → Pin 2 (RX роутера)
+   - **Pin 1 (+3.3V) ОБЯЗАТЕЛЬНО оставить неподключенным!**
+2. Соедините сетевым патч-кордом Ethernet LAN-порт роутера с сетевой картой ПК.
+3. Настройте на ПК статический IP-адрес:
+   - IP-адрес: `192.168.1.2`
+   - Маска подсети: `255.255.255.0`
+   - Основной шлюз: `192.168.1.1`
+
+#### Шаг 2. Автоматическая прошивка (Рекомендуемый способ)
+Запустите скрипт автоматизации:
+```bash
+python3 cfe_auto_flash_and_boot.py
+```
+Скрипт автоматически найдет порт UART (`/dev/ttyUSB*`), переведет терминал в режим 115200 бод и попросит перещелкнуть питание:
+```text
+[*] CFE AUTO-FLASHER & BOOT MONITOR on /dev/ttyUSB0 (115200 8N1)
+[*] Образ: openwrt_spi_fixed_v5_cfe.bin (1835012 байт)
+[+] UART готов. Ожидаю перезапуск роутера...
+[!] ПОЖАЛУЙСТА, ВЫКЛЮЧИТЕ И ВКЛЮЧИТЕ ПИТАНИЕ РОУТЕРА ПРЯМО СЕЙЧАС!
+```
+Выключите и включите кнопку питания на задней панели роутера. Скрипт самостоятельно:
+1. Поймает момент старта загрузчика серией пробелов и остановит CFE в консоли `CFE>`.
+2. Загрузит образ `openwrt_spi_fixed_v5_cfe.bin` в веб-сервер восстановления CFE (`http://192.168.1.1/upload.cgi`).
+3. Дождется завершения прошивки Flash-памяти и перезагрузки устройства.
+4. Отследит инициализацию ядра OpenWrt и сетевого интерфейса.
+5. Выполнит проверочный пинг до `192.168.1.1` и протестирует доступ к Telnet!
+
+#### Шаг 3. Ручной способ прошивки (через браузер)
+Если вы предпочитаете ручной контроль:
+1. Подключитесь к терминалу: `picocom -b 115200 /dev/ttyUSB0`.
+2. Зажмите пробел на клавиатуре и включите питание роутера до появления приглашения `CFE>`.
+3. Зайдите через браузер по адресу: `http://192.168.1.1`.
+4. В веб-интерфейсе **CFE Crash Recovery Mode** выберите файл `openwrt_spi_fixed_v5_cfe.bin` и нажмите **Upload**.
+5. Дождитесь прошивки и перезапуска (~60 секунд).
+
+#### Шаг 4. Вход в OpenWrt
+После перезагрузки подключитесь к роутеру по локальной сети:
+```bash
+telnet 192.168.1.1
+```
+Пароль по умолчанию отсутствует — откроется полнофункциональная консоль `ash` с баннером **OpenWrt Backfire (10.03.1)**.

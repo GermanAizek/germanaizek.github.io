@@ -184,7 +184,9 @@ Kernel panic - not syncing: Fatal exception
 ```
 
 ### Root Cause Analysis:
-The function `my_read` in OpenWrt`s legacy `bcm963xx_flash.c` was designed for older Broadcom SoCs with Parallel NOR flash:
+The Linux page fault and bus error handler [`arch/mips/mm/fault.c:do_page_fault`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/mm/fault.c#L86) trapped the panic. The kernel MTD stack trace traces the execution flow: sector read [`mtdblock_readsect`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdblock.c#L244) in [`drivers/mtd/mtdblock.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdblock.c) delegates to partition handling [`part_read`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdpart.c#L45) in [`drivers/mtd/mtdpart.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/mtd/mtdpart.c), routing through [`include/linux/mtd/mtd.h`](https://github.com/torvalds/linux/blob/v2.6.32/include/linux/mtd/mtd.h) into `my_read`.
+
+The function `my_read` in OpenWrt's legacy `bcm963xx_flash.c` was designed for older Broadcom SoCs with Parallel NOR flash:
 ```c
 static int my_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen, u_char *buf) {
     memcpy(buf, (void *)(0xbfc00000 + from), len);
@@ -209,7 +211,7 @@ BCM6338 SPI Controller Register Map:
 | `0x41` | `SPI_MSG_DATA` | Transmit FIFO buffer (command + 24-bit address) |
 | `0x80` | `SPI_RX_DATA` | Receive FIFO buffer (data read back from Flash) |
 
-We wrote an independent MIPS32 assembly driver (`patch_spi_mtd_v4.S`) to replace `my_read`:
+We wrote an independent MIPS32 assembly driver ([`patch_spi_mtd_v4.S`](downloads/patch_spi_mtd_v4.S)) to replace `my_read`:
 
 ```mips
 # patch_spi_mtd_v4.S - BCM6338 Bare-Metal Hardware SPI Driver
@@ -318,7 +320,9 @@ With storage access operational, the system booted to a login prompt, but Ethern
 - Hardware interface counters remained at `RX packets: 0` (no ingress packets reached the MAC).
 
 ### Investigating the `bcm63xx_enet` Driver:
-Inspecting the kernel board tables (`arch/mips/bcm63xx/boards/board_bcm963xx.c`) revealed a critical misconfiguration in the reference profile `board_96338gw`:
+Diving into the Broadcom Ethernet kernel subsystem ([`arch/mips/bcm63xx/boards/board_bcm963xx.c`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/boards/board_bcm963xx.c#L39-L48) and [`drivers/net/bcm63xx_enet.c`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/net/bcm63xx_enet.c#L1708-L1717)) exposed a fundamental discrepancy.
+
+In the reference profile `board_96338gw` ([`board_bcm963xx.c:39`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/boards/board_bcm963xx.c#L39-L48)), against which the kernel was built, Ethernet was configured as:
 ```c
 static struct board_info __initdata board_96338gw = {
     .name = "96338GW",
@@ -333,9 +337,9 @@ static struct board_info __initdata board_96338gw = {
 };
 ```
 
-This caused two catastrophic failures:
-1. When `!pd->use_internal_phy`, the kernel reconfigured the SoC pinmux into external MII mode (`GPIO_MODE_6338_ENET0`), disconnecting the internal RJ-45 PHY lines.
-2. In `bcm_enet_probe`:
+The network driver processed these flags as follows:
+1. In the platform device registration ([`arch/mips/bcm63xx/dev-enet.c:144`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/bcm63xx/dev-enet.c#L144-L151)), when `!pd->use_internal_phy`, the kernel leaves `dpd->phy_id = 0` and omits the internal PHY interrupt line `IRQ_ENET_PHY`.
+2. In function `bcm_enet_probe` ([`drivers/net/bcm63xx_enet.c:1708`](https://github.com/torvalds/linux/blob/v2.6.32/drivers/net/bcm63xx_enet.c#L1708-L1717)):
 ```c
 if (priv->mac_id == 0 && priv->has_phy && !priv->use_external_mii) {
     /* using internal PHY, enable clock */
@@ -343,7 +347,7 @@ if (priv->mac_id == 0 && priv->has_phy && !priv->use_external_mii) {
     clk_enable(priv->phy_clk);
 }
 ```
-Because `has_phy == 0`, **the kernel never enabled the internal EPHY clock**! The physical PHY silicon was unpowered and inert, despite the driver reporting a synthetic software "forced UP" status.
+Because `has_phy == 0`, **the kernel never enabled the internal EPHY clock**! The physical PHY silicon was unpowered and inert, despite the driver reporting a synthetic software "forced UP" status. Board and platform definitions are declared in [`board_bcm963xx.h`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/include/asm/mach-bcm63xx/board_bcm963xx.h#L32) and [`bcm63xx_dev_enet.h`](https://github.com/torvalds/linux/blob/v2.6.32/arch/mips/include/asm/mach-bcm63xx/bcm63xx_dev_enet.h#L38).
 
 ### Binary Kernel Patch:
 Locating the board table at offset `0x2a6794` in `vmlinux.bin`, we flipped the configuration fields:
@@ -478,3 +482,77 @@ We have demonstrated that even severely resource-constrained hardware (15-year-o
 - Publishing full build trees, binary artifacts, and automated toolchains.
 
 *Follow updates on GitHub: [GermanAizek/germanaizek.github.io](https://github.com/GermanAizek/germanaizek.github.io).*
+
+---
+
+## 9. Downloads & DIY Installation Kit
+
+To reproduce these results, resurrect a bricked modem, or turn a DSL-2500U D3 into a compact microserver, all required binary artifacts and automation scripts are provided below.
+
+### Release Artifacts:
+
+| File | Size | Description | SHA-256 Checksum |
+|---|---|---|---|
+| [**`dsl2500u-openwrt-v5-diy-kit.zip`**](downloads/dsl2500u-openwrt-v5-diy-kit.zip) | 1.72 MB | **Complete Kit:** Patched firmware, flashing script, and assembly SPI driver | `2a765bc2bffab4ad00f48a3053d1645545fa457fe35f46654a4f7c5c7d94162b` |
+| [**`openwrt_spi_fixed_v5_cfe.bin`**](downloads/openwrt_spi_fixed_v5_cfe.bin) | 1.75 MB | Production-ready OpenWrt Backfire image with CFE header (SPI fix + PHY fix + RAM diet) | `a9198ec719ec701a5fac4eec6169d85d16fec9f2ebed36cf1e6f8a864c068d28` |
+| [**`cfe_auto_flash_and_boot.py`**](downloads/cfe_auto_flash_and_boot.py) | 7.18 KB | Automated Python flasher: CFE capture, HTTP web-flashing, and boot diagnostics | `be739dc6ef2c2b73f9ac5298a61e7a4542e372832b8c52eb7f6f1855465ad369` |
+| [**`patch_spi_mtd_v4.S`**](downloads/patch_spi_mtd_v4.S) | 4.03 KB | MIPS32 assembly source for the bare-metal SPI MMIO flash controller driver | `d1a3629fb3dc9e4d049ac80b61c786e35bf8a90e737b56d726eb62b92e4b4a4d` |
+
+### Direct Command-Line Download (`wget`):
+```bash
+# Download complete kit:
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/dsl2500u-openwrt-v5-diy-kit.zip
+unzip dsl2500u-openwrt-v5-diy-kit.zip
+
+# Or download individual files:
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/openwrt_spi_fixed_v5_cfe.bin
+wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/blog/downloads/cfe_auto_flash_and_boot.py
+```
+
+### Step-by-Step Installation Guide:
+
+#### Step 1: Hardware Connections
+1. Connect a **USB-to-UART 3.3V TTL adapter** to the 4-pin `JP2` header on the PCB:
+   - **GND** → Pin 4 (GND)
+   - **RX** of adapter → Pin 3 (Router TX)
+   - **TX** of adapter → Pin 2 (Router RX)
+   - **Pin 1 (+3.3V) MUST REMAIN DISCONNECTED!**
+2. Connect an RJ-45 Ethernet cable between the router LAN port and your PC.
+3. Configure your host machine network interface with a static IP:
+   - IP Address: `192.168.1.2`
+   - Netmask: `255.255.255.0`
+   - Gateway: `192.168.1.1`
+
+#### Step 2: Automated Flashing (Recommended)
+Launch the automation script:
+```bash
+python3 cfe_auto_flash_and_boot.py
+```
+The script will locate your serial device (`/dev/ttyUSB*`), configure 115200 baud, and prompt you to toggle power:
+```text
+[*] CFE AUTO-FLASHER & BOOT MONITOR on /dev/ttyUSB0 (115200 8N1)
+[*] Образ: openwrt_spi_fixed_v5_cfe.bin (1835012 байт)
+[+] UART готов. Ожидаю перезапуск роутера...
+[!] ПОЖАЛУЙСТА, ВЫКЛЮЧИТЕ И ВКЛЮЧИТЕ ПИТАНИЕ РОУТЕРА ПРЯМО СЕЙЧАС!
+```
+Cycle the hardware power switch. The script will automatically:
+1. Intercept boot execution and halt the bootloader at `CFE>`.
+2. Push `openwrt_spi_fixed_v5_cfe.bin` to CFE's HTTP recovery endpoint (`http://192.168.1.1/upload.cgi`).
+3. Monitor flash write completion and subsequent reboot.
+4. Verify Linux kernel initialization and physical link establishment.
+5. Perform an automated ping verification and confirm Telnet port 23 accessibility!
+
+#### Step 3: Manual Flashing via Web Browser
+If you prefer manual flashing:
+1. Attach serial terminal: `picocom -b 115200 /dev/ttyUSB0`.
+2. Hold the Spacebar and toggle router power until `CFE>` appears.
+3. Open `http://192.168.1.1` in your browser.
+4. In the **CFE Crash Recovery Mode** page, select `openwrt_spi_fixed_v5_cfe.bin` and click **Upload**.
+5. Wait ~60 seconds for flash write and reboot.
+
+#### Step 4: Accessing OpenWrt
+Once booted, connect to the router shell:
+```bash
+telnet 192.168.1.1
+```
+No password is required — you will be welcomed by the interactive `ash` shell and the **OpenWrt Backfire (10.03.1)** banner.

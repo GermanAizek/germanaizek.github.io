@@ -49,6 +49,16 @@ title: "Портирование OpenWrt на Broadcom BCM6338 с 8 МБ ОЗУ 
 +------------------------------------------------------------------+
 ```
 
+<div align="center">
+  <img src="images/screen6.jpg" width="85%" alt="D-Link DSL-2500U HW D3 Label" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Заводской шильдик роутера: модель DSL-2500U, аппаратная ревизия H/W Ver: D3, MAC: 1CBDB93E5D09, F/W Ver: SZT_1.51.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen1.jpg" width="85%" alt="DSL-2500U on testbench" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Подопытный D-Link DSL-2500U D3 на тестовом стенде лаборатории (выделен красным маркером).</em></p>
+</div>
+
 ---
 
 ## 2. Анализ вендорских защит и ловушки CFE Recovery
@@ -93,6 +103,21 @@ $$	ext{rootfsAddress} < 	ext{kernelAddress}$$
 4. **GND:** Общая земля
 
 Параметры терминала: **115200 бод, 8 бит, без четности, 1 стоп-бит (115200 8N1)**.
+
+<div align="center">
+  <img src="images/screen3.jpg" width="85%" alt="DSL-2500U Lab Setup" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Общий вид тестового стенда: разобранная плата DSL-2500U, прямое Ethernet-соединение с хостом (кабель с меткой «100M») и подключение линий UART к USB-порту рабочей станции.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen4.jpg" width="85%" alt="DSL-2500U PCB Macro" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Макрофотография печатной платы: SoC Broadcom (маркировка BCM6332 / HS1006 / 958063), чип 8 МБ SDRAM ESMT M12L64164A, Atmel SPI Flash и сервисный 4-пиновый разъем JP2. Обратите внимание: красный провод питания VCC оставлен изолированным во избежание повреждения платы.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen5.jpg" width="85%" alt="USB to TTL Adapter" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Конфигурация переходника USB-to-TTL: джампер напряжения переключен в режим 3.3V, подключены линии TXD, RXD и GND. Питающий провод VCC отключен.</em></p>
+</div>
 
 ### Перехват CFE (1-секундное окно):
 При подаче питания CFE выдает лог и ожидает нажатия клавиши ровно 1 секунду:

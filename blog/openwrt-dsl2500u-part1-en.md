@@ -49,6 +49,16 @@ Yet, from a low-level systems perspective, this device presents an exceptional t
 +------------------------------------------------------------------+
 ```
 
+<div align="center">
+  <img src="images/screen6.jpg" width="85%" alt="D-Link DSL-2500U HW D3 Label" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Factory label of the device: Model DSL-2500U, Hardware Revision H/W Ver: D3, MAC: 1CBDB93E5D09, F/W Ver: SZT_1.51.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen1.jpg" width="85%" alt="DSL-2500U on testbench" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>The target D-Link DSL-2500U D3 on our lab testbench (highlighted in red).</em></p>
+</div>
+
 ---
 
 ## 2. Analyzing Vendor Defenses & The CFE Recovery Traps
@@ -93,6 +103,21 @@ Near the power supply capacitors on the DSL-2500U D3 PCB lies an unpopulated 4-p
 4. **GND:** Ground
 
 Terminal Parameters: **115200 baud, 8 data bits, no parity, 1 stop bit (115200 8N1)**.
+
+<div align="center">
+  <img src="images/screen3.jpg" width="85%" alt="DSL-2500U Lab Setup" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Overall hardware testbench setup: disassembled DSL-2500U board, direct host Ethernet connection ("100M" label), and serial UART jumpers wired to the workstation USB port.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen4.jpg" width="85%" alt="DSL-2500U PCB Macro" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>Macro view of the PCB: Broadcom SoC (marked BCM6332 / HS1006 / 958063), 8 MB ESMT SDRAM (M12L64164A), Atmel SPI Flash, and 4-pin service header JP2. Note: the red 3.3V VCC jumper is purposefully left floating.</em></p>
+</div>
+
+<div align="center">
+  <img src="images/screen5.jpg" width="85%" alt="USB to TTL Adapter" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
+  <p><em>USB-to-TTL UART adapter configuration: logic level jumper set to 3.3V, TXD, RXD, and GND connected. Red VCC power lead safely disconnected.</em></p>
+</div>
 
 ### Catching the 1-Second CFE Auto-Run Window:
 On power-on, CFE prints startup diagnostics and allows a strict 1-second delay for user interruption:

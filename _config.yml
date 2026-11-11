@@ -1,1 +1,6 @@
+title: Herman Semenoff
+description: Low-Level Security Research, Reverse Engineering & Hardware Hacking
 theme: jekyll-theme-architect
+show_downloads: false
+markdown: kramdown
+highlighter: rouge

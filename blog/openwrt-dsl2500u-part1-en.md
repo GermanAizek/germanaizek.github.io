@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: blog
 title: "Porting OpenWrt to Broadcom BCM6338 with 8MB RAM (Part 1)"
 ---
 
@@ -8,7 +8,7 @@ title: "Porting OpenWrt to Broadcom BCM6338 with 8MB RAM (Part 1)"
 
 *Author: Herman Semenoff ([@GermanAizek](https://github.com/GermanAizek))*  
 *Date: November 2026*  
-*Language: **English** | [Читать на русском](openwrt-dsl2500u-part1-ru.html)*
+*Language: **English** | [Русский](openwrt-dsl2500u-part1-ru.html) | [中文 (简体)](openwrt-dsl2500u-part1-zh.html)*
 
 [← Back to Blog](index.html) | [Main Page](/)
 
@@ -29,25 +29,6 @@ Yet, from a low-level systems perspective, this device presents an exceptional t
 - **Ethernet:** 1x 10/100 Mbps (integrated on-die EPHY transceiver)
 - **Bootloader:** Broadcom CFE v1.0.37-8.7 (Build Date Dec 18 2009)
 - **Stock Firmware:** D-Link RU_1.58 (Linux 2.6.8.4-mips-broadcom)
-
-```
-+------------------------------------------------------------------+
-|                   D-Link DSL-2500U HW: D3                        |
-|                                                                  |
-|   +-----------------------+           +----------------------+   |
-|   |   BCM6338 SoC         |   SPI     | Atmel AT26DF161      |   |
-|   |   MIPS32 @ 240MHz     |<=========>| 2MB SPI Flash        |   |
-|   |   +-----------------+ |   MMIO    +----------------------+   |
-|   |   | Internal 10/100 | |                                      |
-|   |   | Ethernet EPHY   | |           +----------------------+   |
-|   |   +--------+--------+ |   16-bit  | 8 MB SDRAM           |   |
-|   +------------|----------+<=========>| (Total System RAM)   |   |
-|                |                      +----------------------+   |
-|          [Ethernet RJ45]                                         |
-|                                                                  |
-|   [UART Header: 3.3V TTL (115200 8N1) - TX, RX, GND]             |
-+------------------------------------------------------------------+
-```
 
 <div align="center">
   <img src="images/screen6.jpg" width="85%" alt="D-Link DSL-2500U HW D3 Label" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />

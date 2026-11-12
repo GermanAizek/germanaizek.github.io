@@ -4,3 +4,9 @@ theme: jekyll-theme-architect
 show_downloads: false
 markdown: kramdown
 highlighter: rouge
+
+defaults:
+  - scope:
+      path: "blog"
+    values:
+      layout: "blog"

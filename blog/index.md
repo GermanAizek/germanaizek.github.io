@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: blog
 title: Technical Research Blog - Herman Semenoff
 ---
 
@@ -11,7 +11,7 @@ Welcome to my technical research blog. Here I document deep-dive reverse enginee
 
 ---
 
-## Articles / Статьи
+## Articles / Статьи / 文章
 
 ### 1. Porting OpenWrt to Broadcom BCM6338 with 8MB RAM (D-Link DSL-2500U D3) — Part 1
 *Published: November 2026 | Tags: `MIPS`, `OpenWrt`, `Reverse Engineering`, `Kernel`, `Hardware SPI`, `BCM6338`*
@@ -20,5 +20,6 @@ A comprehensive technical post-mortem on resurrecting a locked-down legacy ADSL 
 
 - 📖 **[Read in English (Part 1)](openwrt-dsl2500u-part1-en.html)**
 - 📖 **[Читать на русском (Часть 1)](openwrt-dsl2500u-part1-ru.html)**
+- 📖 **[阅读中文版 (第1部分)](openwrt-dsl2500u-part1-zh.html)**
 
 ---

@@ -30,7 +30,7 @@ I don't have much time for constant activity in opensource, I often make changes
 ## Technical Blog & Research / Блог и исследования
 - 🔬 **[Porting OpenWrt to Broadcom BCM6338 with 8MB RAM (D-Link DSL-2500U D3) — Part 1](blog/openwrt-dsl2500u-part1-en.html)**  
   *Defeating locked CFE, writing a bare-metal SPI MMIO driver in MIPS assembly, fixing internal EPHY clocks, and conquering the 8MB RAM barrier.*  
-  *[Read in English](blog/openwrt-dsl2500u-part1-en.html) | [Читать на русском](blog/openwrt-dsl2500u-part1-ru.html)*
+  *[Read in English](blog/openwrt-dsl2500u-part1-en.html) | [Читать на русском](blog/openwrt-dsl2500u-part1-ru.html) | [阅读中文版](blog/openwrt-dsl2500u-part1-zh.html)*
 - 📚 **[Все статьи / All Blog Posts →](blog/)**
 
 ## My open forks

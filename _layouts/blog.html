@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title | default: "Herman Semenoff" }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+
+  <style>
+    /* Standalone GitHub-Style Markdown Theme for Technical Research */
+    :root {
+      --color-canvas-default: #ffffff;
+      --color-canvas-subtle: #f6f8fa;
+      --color-border-default: #d0d7de;
+      --color-border-muted: #d8dee4;
+      --color-fg-default: #1f2328;
+      --color-fg-muted: #656d76;
+      --color-accent-fg: #0969da;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+      font-family: var(--font-stack);
+      color: var(--color-fg-default);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.65;
+    }
+
+    /* Top Navigation Header */
+    .blog-header {
+      background-color: #24292f;
+      color: #ffffff;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .blog-header-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .blog-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .blog-brand a {
+      color: #f0f6fc;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .blog-brand a:hover {
+      color: #58a6ff;
+    }
+    .blog-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13.5px;
+    }
+    .blog-nav-links a {
+      color: #c9d1d9;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .blog-nav-links a:hover {
+      color: #58a6ff;
+    }
+    .blog-lang-pill {
+      background: #30363d;
+      border: 1px solid #484f58;
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: inline-flex;
+      gap: 8px;
+      font-size: 12.5px;
+    }
+
+    /* Main Container */
+    .blog-container {
+      max-width: 1020px;
+      margin: 30px auto 60px auto;
+      padding: 0 16px;
+    }
+
+    .markdown-body {
+      background-color: var(--color-canvas-default);
+      border: 1px solid var(--color-border-default);
+      border-radius: 8px;
+      padding: 48px 56px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      font-size: 16px;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 768px) {
+      .blog-container {
+        margin: 14px auto;
+        padding: 0 8px;
+      }
+      .markdown-body {
+        padding: 24px 16px;
+        border-radius: 6px;
+      }
+      .blog-header {
+        padding: 10px 14px;
+      }
+    }
+
+    /* Typography */
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4,
+    .markdown-body h5,
+    .markdown-body h6 {
+      margin-top: 28px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #1f2328;
+    }
+    .markdown-body h1 {
+      font-size: 2em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--color-border-muted);
+      margin-top: 0;
+    }
+    .markdown-body h2 {
+      font-size: 1.5em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--color-border-muted);
+    }
+    .markdown-body h3 { font-size: 1.25em; }
+    .markdown-body h4 { font-size: 1.05em; }
+    .markdown-body p {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .markdown-body a {
+      color: var(--color-accent-fg);
+      text-decoration: none;
+    }
+    .markdown-body a:hover {
+      text-decoration: underline;
+    }
+
+    /* Lists */
+    .markdown-body ul,
+    .markdown-body ol {
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding-left: 2em;
+    }
+    .markdown-body li + li {
+      margin-top: 0.25em;
+    }
+
+    /* Blockquotes */
+    .markdown-body blockquote {
+      margin: 0 0 16px 0;
+      padding: 0 1em;
+      color: var(--color-fg-muted);
+      border-left: 0.25em solid var(--color-border-default);
+      background-color: var(--color-canvas-subtle);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Code & Syntax Highlighting */
+    .markdown-body code {
+      font-family: var(--font-mono);
+      font-size: 85%;
+      background-color: rgba(175, 184, 193, 0.2);
+      padding: 0.2em 0.4em;
+      border-radius: 6px;
+    }
+    .markdown-body pre {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      padding: 16px;
+      overflow-x: auto;
+      background-color: var(--color-canvas-subtle);
+      border: 1px solid var(--color-border-default);
+      border-radius: 6px;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .markdown-body pre code {
+      background-color: transparent;
+      padding: 0;
+      font-size: 100%;
+      border-radius: 0;
+      white-space: pre;
+    }
+
+    /* Rouge Syntax Highlighting Palette */
+    .highlight .c, .highlight .c1, .highlight .cm { color: #6e7781; font-style: italic; } /* Comments */
+    .highlight .k, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr { color: #cf222e; font-weight: 600; } /* Keywords */
+    .highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .sc { color: #0a3069; } /* Strings */
+    .highlight .m, .highlight .mf, .highlight .mi, .highlight .mo, .highlight .il { color: #0550ae; } /* Numbers */
+    .highlight .na, .highlight .nf, .highlight .nb { color: #8250df; } /* Functions/Builtins */
+    .highlight .o, .highlight .ow { color: #cf222e; } /* Operators */
+    .highlight .nl { color: #953800; font-weight: 600; } /* Labels */
+    .highlight .nd { color: #116329; } /* Directives */
+
+    /* Tables */
+    .markdown-body table {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin-top: 16px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .markdown-body table th {
+      font-weight: 600;
+      background-color: var(--color-canvas-subtle);
+      border: 1px solid var(--color-border-default);
+      padding: 8px 14px;
+      text-align: left;
+    }
+    .markdown-body table td {
+      border: 1px solid var(--color-border-default);
+      padding: 8px 14px;
+    }
+    .markdown-body table tr:nth-child(2n) {
+      background-color: #fafbfc;
+    }
+    .markdown-body table tr:hover {
+      background-color: #f3f4f6;
+    }
+
+    /* Images */
+    .markdown-body img {
+      max-width: 100%;
+      box-sizing: content-box;
+      border-radius: 6px;
+    }
+
+    /* Dividers */
+    .markdown-body hr {
+      height: 0.2em;
+      padding: 0;
+      margin: 28px 0;
+      background-color: var(--color-border-muted);
+      border: 0;
+    }
+
+    /* Footer */
+    .blog-footer {
+      text-align: center;
+      padding: 30px 16px 50px 16px;
+      color: var(--color-fg-muted);
+      font-size: 13.5px;
+      border-top: 1px solid var(--color-border-default);
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+    .blog-footer a {
+      color: var(--color-accent-fg);
+      text-decoration: none;
+    }
+    .blog-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="blog-header">
+    <div class="blog-header-inner">
+      <div class="blog-brand">
+        <a href="/">← Herman Semenoff</a>
+        <span style="color: #484f58;">/</span>
+        <a href="/blog/">Technical Blog</a>
+      </div>
+      <div class="blog-nav-links">
+        <div class="blog-lang-pill">
+          <a href="/blog/openwrt-dsl2500u-part1-en.html" title="English">EN</a>
+          <span style="color: #6e7681;">|</span>
+          <a href="/blog/openwrt-dsl2500u-part1-ru.html" title="Русский">RU</a>
+          <span style="color: #6e7681;">|</span>
+          <a href="/blog/openwrt-dsl2500u-part1-zh.html" title="简体中文">ZH</a>
+        </div>
+        <a href="https://github.com/GermanAizek" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="blog-container">
+    <article class="markdown-body">
+      {{ content }}
+    </article>
+  </div>
+
+  <footer class="blog-footer">
+    <p>© 2026 Herman Semenoff (GermanAizek). Low-Level Security Research & Embedded Systems.</p>
+    <p><a href="/">Home</a> • <a href="/blog/">All Articles</a> • <a href="https://github.com/GermanAizek/germanaizek.github.io" target="_blank" rel="noopener">Source Repository</a></p>
+  </footer>
+</body>
+</html>

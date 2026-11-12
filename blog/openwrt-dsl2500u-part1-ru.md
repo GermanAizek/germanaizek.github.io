@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: blog
 title: "Портирование OpenWrt на Broadcom BCM6338 с 8 МБ ОЗУ (Часть 1)"
 ---
 
@@ -8,7 +8,7 @@ title: "Портирование OpenWrt на Broadcom BCM6338 с 8 МБ ОЗУ 
 
 *Автор: Herman Semenoff ([@GermanAizek](https://github.com/GermanAizek))*  
 *Дата: Ноябрь 2026*  
-*Язык: **Русский** | [Switch to English](openwrt-dsl2500u-part1-en.html)*
+*Язык: [English](openwrt-dsl2500u-part1-en.html) | **Русский** | [中文 (简体)](openwrt-dsl2500u-part1-zh.html)*
 
 [← Назад в блог](index.html) | [На главную](/)
 
@@ -29,25 +29,6 @@ title: "Портирование OpenWrt на Broadcom BCM6338 с 8 МБ ОЗУ 
 - **Ethernet:** 1x 10/100 Mbps (встроенный в кристалл EPHY)
 - **Загрузчик:** Broadcom CFE v1.0.37-8.7 (сборка Dec 18 2009)
 - **Стоковая прошивка:** D-Link RU_1.58 (Linux 2.6.8.4-mips-broadcom)
-
-```
-+------------------------------------------------------------------+
-|                   D-Link DSL-2500U HW: D3                        |
-|                                                                  |
-|   +-----------------------+           +----------------------+   |
-|   |   BCM6338 SoC         |   SPI     | Atmel AT26DF161      |   |
-|   |   MIPS32 @ 240MHz     |<=========>| 2MB SPI Flash        |   |
-|   |   +-----------------+ |   MMIO    +----------------------+   |
-|   |   | Internal 10/100 | |                                      |
-|   |   | Ethernet EPHY   | |           +----------------------+   |
-|   |   +--------+--------+ |   16-bit  | 8 MB SDRAM           |   |
-|   +------------|----------+<=========>| (Total System RAM)   |   |
-|                |                      +----------------------+   |
-|          [Ethernet RJ45]                                         |
-|                                                                  |
-|   [UART Header: 3.3V TTL (115200 8N1) - TX, RX, GND]             |
-+------------------------------------------------------------------+
-```
 
 <div align="center">
   <img src="images/screen6.jpg" width="85%" alt="D-Link DSL-2500U HW D3 Label" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />

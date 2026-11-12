@@ -76,12 +76,20 @@ Standard modern OpenWrt images follow a Kernel-First layout. Uploading an image 
 
 Physical access via the serial UART interface became the only reliable attack vector.
 
-### UART Pinout:
-Near the power supply capacitors on the DSL-2500U D3 PCB lies an unpopulated 4-pin header:
-1. **VCC:** 3.3V (*Never connect this to your USB-UART dongle to prevent regulator backfeeding!*)
-2. **TX:** Router Transmit (connects to USB-UART RX)
-3. **RX:** Router Receive (connects to USB-UART TX)
-4. **GND:** Ground
+### UART Pinout (JP2 Header):
+Near the power inductor and filter capacitors on the DSL-2500U D3 PCB lies a 5-pin service header labeled **JP2**:
+
+| JP2 Pin on Router | Router Signal | Direction | Wire Color | USB-UART Adapter Pin | Description & Function |
+|---|---|---|---|---|---|
+| **Pin 1** (leftmost, above `JP2` label) | **RX** | Router Input | 🟨 **Yellow** | **TXD** | Receives spaces and commands from PC to intercept CFE |
+| **Pin 2** | NC | — | — | *Not Connected* | Unpopulated slot (unused) |
+| **Pin 3** | NC | — | — | *Not Connected* | Unpopulated slot (unused) |
+| **Pin 4** (penultimate) | **GND** | Ground | 🟫 **Brown** | **GND** | Common signal reference ground |
+| **Pin 5** (rightmost) | **TX** | Router Output | 🟧 **Orange** | **RXD** | Streams boot diagnostics and CFE prompt to PC |
+| — | **VCC (+3.3V)** | Power | 🟥 **Red** | *Not Connected* | **⚠️ MUST REMAIN FLOATING!** Kept isolated in the air |
+
+> [!WARNING]
+> **Critical Power Warning:** The router must be powered solely via its dedicated 12V DC power supply. Never connect the 3.3V or 5V VCC lead from the USB-to-UART adapter to the router board — this would cause regulator backfeeding and destroy onboard switching converters and ICs. The red power wire must remain completely disconnected and floating.
 
 Terminal Parameters: **115200 baud, 8 data bits, no parity, 1 stop bit (115200 8N1)**.
 
@@ -92,12 +100,12 @@ Terminal Parameters: **115200 baud, 8 data bits, no parity, 1 stop bit (115200 8
 
 <div align="center">
   <img src="images/screen4.jpg" width="85%" alt="DSL-2500U PCB Macro" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
-  <p><em>Macro view of the PCB: Broadcom SoC (marked BCM6332 / HS1006 / 958063), 8 MB ESMT SDRAM (M12L64164A), Atmel SPI Flash, and 4-pin service header JP2. Note: the red 3.3V VCC jumper is purposefully left floating.</em></p>
+  <p><em>Macro view of the PCB: Broadcom SoC (marked BCM6332 / HS1006 / 958063), 8 MB ESMT SDRAM (M12L64164A), Atmel SPI Flash, and JP2 service header wiring: yellow wire (Pin 1, RX), brown wire (Pin 4, GND), orange wire (Pin 5, TX). The red 3.3V VCC wire is kept isolated and floating.</em></p>
 </div>
 
 <div align="center">
   <img src="images/screen5.jpg" width="85%" alt="USB to TTL Adapter" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 12px 0;" />
-  <p><em>USB-to-TTL UART adapter configuration: logic level jumper set to 3.3V, TXD, RXD, and GND connected. Red VCC power lead safely disconnected.</em></p>
+  <p><em>USB-to-TTL UART adapter configuration: logic level jumper bridging VCC and 3V3 (3.3V TTL mode). Connected lines: TXD (yellow wire), RXD (orange wire), and GND (brown wire). Red VCC wire is safely disconnected.</em></p>
 </div>
 
 ### Catching the 1-Second CFE Auto-Run Window:
@@ -494,11 +502,12 @@ wget https://raw.githubusercontent.com/GermanAizek/germanaizek.github.io/main/bl
 ### Step-by-Step Installation Guide:
 
 #### Step 1: Hardware Connections
-1. Connect a **USB-to-UART 3.3V TTL adapter** to the 4-pin `JP2` header on the PCB:
-   - **GND** → Pin 4 (GND)
-   - **RX** of adapter → Pin 3 (Router TX)
-   - **TX** of adapter → Pin 2 (Router RX)
-   - **Pin 1 (+3.3V) MUST REMAIN DISCONNECTED!**
+1. Connect a **USB-to-UART 3.3V TTL adapter** to the `JP2` service header on the PCB:
+   - **Yellow wire:** Adapter TXD → **Pin 1 (Router RX)** (leftmost pin, above `JP2` silkscreen)
+   - **Brown wire:** Adapter GND → **Pin 4 (Router GND)** (penultimate pin)
+   - **Orange wire:** Adapter RXD → **Pin 5 (Router TX)** (rightmost pin)
+   - **Pin 2 & Pin 3:** Leave unpopulated (NC / unused)
+   - **Red wire (+3.3V VCC): MUST REMAIN DISCONNECTED!** Keep floating and isolated.
 2. Connect an RJ-45 Ethernet cable between the router LAN port and your PC.
 3. Configure your host machine network interface with a static IP:
    - IP Address: `192.168.1.2`

@@ -229,7 +229,13 @@
       border-spacing: 0;
       margin-top: 16px;
       margin-bottom: 24px;
-      overflow-x: auto;
+    }
+    @media (max-width: 768px) {
+      .markdown-body table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+      }
     }
     .markdown-body table th {
       font-weight: 600;

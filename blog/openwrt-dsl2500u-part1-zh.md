@@ -182,6 +182,7 @@ static int my_read(struct mtd_info *mtd, loff_t from, size_t len, size_t *retlen
 要从 Atmel AT26DF161 芯片中正确读取任意偏移的数据，系统必须使用标准的 SPI Fast Read 指令（`0x03`），通过 BCM6338 芯片内部集成的硬件 SPI 控制器进行通信。该控制器的一组硬件寄存器映射在物理基地址 **`0xfffe0c00`**。
 
 BCM6338 内部 SPI 控制器寄存器映射表：
+
 | 相对偏移 | 寄存器名称 | 功能与作用说明 |
 |---|---|---|
 | `0x00` | `SPI_CMD` | 命令控制寄存器（触发传输事务、拉低/拉高片选 CS0） |

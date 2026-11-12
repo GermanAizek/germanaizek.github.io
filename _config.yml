@@ -4,6 +4,10 @@ theme: jekyll-theme-architect
 show_downloads: false
 markdown: kramdown
 highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+
 
 defaults:
   - scope:

@@ -184,6 +184,7 @@ Any uncached read beyond `0x10000` (`from >= 0xbfc10000`) accesses an unmapped i
 To read arbitrary offsets from the Atmel AT26DF161 SPI Flash chip, the kernel must issue standard SPI Read commands (`0x03`) through the BCM6338 hardware SPI controller mapped at physical base address **`0xfffe0c00`**.
 
 BCM6338 SPI Controller Register Map:
+
 | Offset | Register Name | Description |
 |---|---|---|
 | `0x00` | `SPI_CMD` | Command register (trigger transaction, assert CS0) |

@@ -14,7 +14,7 @@ Welcome to my technical research blog. Here I document deep-dive reverse enginee
 ## Articles / Статьи / 文章
 
 ### 1. Porting OpenWrt to Broadcom BCM6338 with 8MB RAM (D-Link DSL-2500U D3) — Part 1
-*Published: November 2026 | Tags: `MIPS`, `OpenWrt`, `Reverse Engineering`, `Kernel`, `Hardware SPI`, `BCM6338`*
+*Published: November 2026 | Tags: `MIPS32`, `OpenWrt`, `Reverse Engineering`, `Kernel`, `Hardware SPI`, `BCM6338`*
 
 A comprehensive technical post-mortem on resurrecting a locked-down legacy ADSL modem with only 8 MB SDRAM and 2 MB SPI Flash. How we bypassed vendor bootloader locks, debugged MIPS Data Bus Errors, wrote a custom hardware MMIO SPI driver in pure assembly, re-engineered the kernel's internal Ethernet PHY clocking, and conquered the 8MB RAM barrier.
 

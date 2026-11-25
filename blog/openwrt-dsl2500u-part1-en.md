@@ -83,10 +83,9 @@ Near the power inductor and filter capacitors on the DSL-2500U D3 PCB lies a 5-p
 |---|---|---|---|---|---|
 | **Pin 1** (leftmost, above `JP2` label) | **RX** | Router Input | 🟨 **Yellow** | **TXD** | Receives spaces and commands from PC to intercept CFE |
 | **Pin 2** | NC | — | — | *Not Connected* | Unpopulated slot (unused) |
-| **Pin 3** | NC | — | — | *Not Connected* | Unpopulated slot (unused) |
+| **Pin 3** | **VCC (+3.3V)** | Power | 🟥 **Red** | *Not Connected* | **⚠️ MUST REMAIN FLOATING!** Kept isolated in the air |
 | **Pin 4** (penultimate) | **GND** | Ground | 🟫 **Brown** | **GND** | Common signal reference ground |
 | **Pin 5** (rightmost) | **TX** | Router Output | 🟧 **Orange** | **RXD** | Streams boot diagnostics and CFE prompt to PC |
-| — | **VCC (+3.3V)** | Power | 🟥 **Red** | *Not Connected* | **⚠️ MUST REMAIN FLOATING!** Kept isolated in the air |
 
 > [!WARNING]
 > **Critical Power Warning:** The router must be powered solely via its dedicated 12V DC power supply. Never connect the 3.3V or 5V VCC lead from the USB-to-UART adapter to the router board — this would cause regulator backfeeding and destroy onboard switching converters and ICs. The red power wire must remain completely disconnected and floating.
